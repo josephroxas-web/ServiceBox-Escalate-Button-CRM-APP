@@ -1,0 +1,33 @@
+{
+  "uid": "servicebox_escalation_app",
+  "type": "app",
+  "config": {
+    "description": "Adds an Escalate button to tickets. Mirrors the escalation form, creates a linked ticket in the triage pipeline, syncs status between source and triage tickets, and tracks severity + incident scores.",
+    "name": "The RevOps Co",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": [
+        "oauth",
+        "tickets",
+        "crm.objects.owners.read",
+        "forms"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://api.hubapi.com"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "support@example.com",
+      "documentationUrl": "https://example.com/docs",
+      "supportUrl": "https://example.com/support",
+      "supportPhone": "+18005555555"
+    }
+  }
+}

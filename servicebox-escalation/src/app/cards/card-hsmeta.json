@@ -1,0 +1,12 @@
+{
+  "uid": "servicebox_escalation_card",
+  "type": "card",
+  "config": {
+    "name": "Technical Escalation",
+    "location": "crm.record.sidebar",
+    "entrypoint": "/app/cards/EscalateCard.tsx",
+    "objectTypes": [
+      "tickets"
+    ]
+  }
+}
