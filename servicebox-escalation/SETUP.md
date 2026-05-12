@@ -94,6 +94,12 @@ cd E:\Hubspot_work\ServiceBox-Escalate-Button-CRM-APP\servicebox-escalation
 hs project dev      # local dev against the test portal
 hs project upload   # deploy
 hs project upload --account=servicebox-escalation && hs project dev --project-account=servicebox-escalation --testing-account=51454166  #for uploading and deploy
+
+Your Two Commands:
+Upload:
+hs project upload --account=46928821
+Dev:
+hs project dev --project-account=46928821 --testing-account=46928821
 ```
 
 ## 6. Open items

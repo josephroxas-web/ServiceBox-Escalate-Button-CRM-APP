@@ -10,19 +10,26 @@ import {
   LoadingSpinner,
   Input,
   Select,
+  MultiSelect,
   TextArea,
 } from '@hubspot/ui-extensions';
 
 type FormField = {
   name: string;
   label: string;
-  fieldType: 'single_line_text' | 'multi_line_text' | 'select' | 'number';
+  fieldType:
+    | 'single_line_text'
+    | 'multi_line_text'
+    | 'select'
+    | 'number'
+    | 'multiple_checkboxes';
   required?: boolean;
   options?: Array<{ label: string; value: string }>;
 };
 
 type EscalationInfo = {
   escalatedTicketId?: string;
+  incidentTicketId?: string | null;
   escalatedAt?: string;
   priority?: string;
   severity?: string;
@@ -125,6 +132,7 @@ const EscalateCard = ({ context, actions }: EscalateCardProps) => {
 
       setEscalationInfo({
         escalatedTicketId: resp.body.escalatedTicketId,
+        incidentTicketId: resp.body.incidentTicketId,
         escalatedAt: new Date().toISOString(),
         priority: resp.body.priority,
         severity: resp.body.severity,
@@ -149,26 +157,35 @@ const EscalateCard = ({ context, actions }: EscalateCardProps) => {
   if (escalationInfo?.escalatedTicketId) {
     return (
       <Flex direction="column" gap="sm">
-        <Alert title="Already escalated" variant="info">
-          <Text>
-            Linked ticket:{' '}
+        <Alert title="Escalation Ticket Created" variant="info">
+          <Flex direction="row" align="center" gap="xs">
+            <Text>Linked ticket:</Text>
             <Text format={{ fontWeight: 'bold' }}>
               #{escalationInfo.escalatedTicketId}
             </Text>
-          </Text>
-          {escalationInfo.priority && (
-            <Text>
-              Priority: <Text format={{ fontWeight: 'bold' }}>{escalationInfo.priority}</Text>
-              {' · '}Severity:{' '}
-              <Text format={{ fontWeight: 'bold' }}>{escalationInfo.severity}</Text>
-            </Text>
-          )}
-          {escalationInfo.shouldCreateIncident && (
-            <Text format={{ fontWeight: 'bold' }}>
-              ⚠ Incident threshold met (IncidentScore ≥ 10)
-            </Text>
-          )}
+          </Flex>
         </Alert>
+        {escalationInfo.incidentTicketId && (
+          <Alert title="Incident Triggered" variant="warning">
+            <Flex direction="column" gap="xs">
+              <Flex direction="row" align="center" gap="xs">
+                <Text>Incident ticket:</Text>
+                <Text format={{ fontWeight: 'bold' }}>
+                  #{escalationInfo.incidentTicketId}
+                </Text>
+                {escalationInfo.severity && (
+                  <Text format={{ fontWeight: 'bold' }}>
+                    ({escalationInfo.severity})
+                  </Text>
+                )}
+              </Flex>
+              <Text variant="microcopy">
+                Per SOP: incident creation is forward-only — close the incident
+                if it was opened in error; the escalation ticket remains.
+              </Text>
+            </Flex>
+          </Alert>
+        )}
       </Flex>
     );
   }
@@ -210,6 +227,29 @@ const EscalateCard = ({ context, actions }: EscalateCardProps) => {
                 value={value}
                 options={f.options || []}
                 onChange={(v) => setValue(f.name, String(v ?? ''))}
+              />
+            );
+          }
+          if (f.fieldType === 'multiple_checkboxes') {
+            const selected = value ? value.split(';').filter(Boolean) : [];
+            const cleanedOptions = (f.options || []).map((o) => ({
+              label: o.label.replace(/\s*\(.*?\)\s*/g, '').trim() || o.label,
+              value: o.value,
+            }));
+            return (
+              <MultiSelect
+                key={f.name}
+                name={f.name}
+                label={f.label}
+                required={f.required}
+                value={selected}
+                options={cleanedOptions}
+                onChange={(vals) =>
+                  setValue(
+                    f.name,
+                    (Array.isArray(vals) ? vals : []).map(String).join(';')
+                  )
+                }
               />
             );
           }
